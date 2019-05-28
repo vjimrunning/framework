@@ -5,11 +5,14 @@
  ****************************************************************************************/
 package com.hbasesoft.framework.common.utils;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
@@ -38,6 +41,18 @@ public class CommonUtilTest {
 
         Assert.equals(str, "你好，我叫小红，我今年8岁了", ErrorCodeDef.SYSTEM_ERROR_10001);
         System.out.println("message format success.");
+    }
+
+    @Test
+    public void getRandomCode() throws IOException {
+        Set<String> randomSet = new HashSet<>();
+        for (int i = 0; i < 10; i++) {
+            String code = CommonUtil.getRandomCode();
+            Assert.isFalse(randomSet.contains(code), ErrorCodeDef.SYSTEM_ERROR_10001);
+            randomSet.add(code);
+        }
+
+        System.out.println("getRandom36Code success.");
     }
 
     @Test
