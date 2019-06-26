@@ -10,9 +10,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.hbasesoft.framework.common.utils.PropertyHolder;
 import com.hbasesoft.framework.common.utils.io.ProtocolUtil.Address;
+import com.hbasesoft.framework.common.utils.security.DataUtil;
 
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
@@ -40,12 +42,22 @@ public class RedisCache extends AbstractRedisCache {
     public RedisCache() {
         String cacheModel = PropertyHolder.getProperty("cache.model");
         if (CACHE_MODEL.equals(cacheModel)) {
+
             Address[] addresses = getAddresses();
             List<JedisShardInfo> shards = new ArrayList<JedisShardInfo>(addresses.length);
             for (Address addr : addresses) {
-                shards.add(new JedisShardInfo(addr.getHost(), addr.getPort()));
+                JedisShardInfo jedisShardInfo = new JedisShardInfo(addr.getHost(), addr.getPort());
+                String password = addr.getPassword();
+                if (StringUtils.isNotEmpty(password)) {
+                    if (password.startsWith("ENC(") && password.endsWith(")")) {
+                        password = DataUtil.decrypt(password.substring(4, password.length() - 1));
+                    }
+                    jedisShardInfo.setPassword(password);
+                }
+                shards.add(jedisShardInfo);
             }
             jedisPool = new JedisPool(getConfig(), addresses[0].getHost(), addresses[0].getPort());
+
         }
     }
 
