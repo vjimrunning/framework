@@ -11,6 +11,7 @@ import java.util.Map;
 
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
+import com.hbasesoft.framework.common.GlobalConstants;
 import com.hbasesoft.framework.rule.core.FlowComponent;
 
 /**
@@ -41,6 +42,15 @@ public class FlowConfig implements Serializable {
 
     private List<FlowConfig> childrenConfigList;
 
+    private int index;
+
+    /**
+     * @param index
+     */
+    public FlowConfig(int index) {
+        this.index = index;
+    }
+
     @SuppressWarnings("rawtypes")
     public FlowComponent getComponent() {
         return component;
@@ -67,7 +77,7 @@ public class FlowConfig implements Serializable {
     }
 
     public String getName() {
-        return name;
+        return new StringBuilder().append(name).append(GlobalConstants.UNDERLINE).append(index).toString();
     }
 
     public void setName(String name) {

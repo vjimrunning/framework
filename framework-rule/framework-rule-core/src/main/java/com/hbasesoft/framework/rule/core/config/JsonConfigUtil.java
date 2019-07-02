@@ -7,6 +7,7 @@ package com.hbasesoft.framework.rule.core.config;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -33,10 +34,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public final class JsonConfigUtil {
 
-    @SuppressWarnings("rawtypes")
     public static FlowConfig getFlowConfig(JSONObject obj) {
+        return getFlowConfig(obj, new AtomicInteger(0));
+    }
 
-        FlowConfig config = new FlowConfig();
+    @SuppressWarnings("rawtypes")
+    private static FlowConfig getFlowConfig(JSONObject obj, AtomicInteger index) {
+        FlowConfig config = new FlowConfig(index.incrementAndGet());
 
         String component = obj.getString("component");
         if (StringUtils.isNotEmpty(component)) {
@@ -61,7 +65,7 @@ public final class JsonConfigUtil {
         if (CollectionUtils.isNotEmpty(children)) {
             List<FlowConfig> childConfigList = new ArrayList<FlowConfig>();
             for (int i = 0, size = children.size(); i < size; i++) {
-                childConfigList.add(getFlowConfig(children.getJSONObject(i)));
+                childConfigList.add(getFlowConfig(children.getJSONObject(i), index));
             }
             config.setChildrenConfigList(childConfigList);
         }

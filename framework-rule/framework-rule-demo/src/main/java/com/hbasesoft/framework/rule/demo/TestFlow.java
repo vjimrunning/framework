@@ -57,6 +57,14 @@ public class TestFlow implements ApplicationContextAware {
         System.out.println(JSONObject.toJSONString(bean));
     }
 
+    @Test
+    public void testStateFlow() {
+        FlowBean bean = new FlowBean();
+        bean.setLastComponent("Child02Component_6");
+        FlowHelper.flowStart(bean, "stateFlow");
+        System.out.println(bean);
+    }
+
     /**
      * Description: <br>
      * 

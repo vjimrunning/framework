@@ -1,0 +1,47 @@
+{
+	"name": "stateFlow",
+	"version": "1.0",
+	"children": [{
+			"stateFlow": "true",
+			"component": "Child01Component",
+			"children": [{
+					"component": "Child01Component"
+				},
+				{
+					"component": "Child02Component"
+				},
+				{
+					"component": "Child03Component"
+				}
+			]
+		},
+		{
+			"stateFlow": "true",
+			"component": "Child02Component",
+			"children": [{
+					"component": "Child01Component"
+				},
+				{
+					"component": "Child02Component"
+				},
+				{
+					"component": "Child03Component"
+				}
+			]
+		},
+		{
+			"stateFlow": "true",
+			"component": "Child03Component",
+			"children": [{
+					"component": "Child01Component"
+				},
+				{
+					"component": "Child02Component"
+				},
+				{
+					"component": "Child03Component"
+				}
+			]
+		}
+	]
+}

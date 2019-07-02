@@ -209,7 +209,7 @@ public final class FlowHelper {
 
         FlowConfig flowConfig = null;
         for (FlowLoader flowLoader : serviceLoader) {
-            flowConfig = flowLoader.load(flowName);
+            flowConfig = flowLoader.load(flowName + "_1");
             if (flowConfig != null) {
                 break;
             }
