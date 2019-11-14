@@ -42,7 +42,7 @@ public class ConfigBean {
     }
 
     @Bean
-    public StateMachineInterceptor StateMachineInterceptor() {
+    public StateMachineInterceptor stateMachineInterceptor() {
         return new StateMachineInterceptor();
     }
 }

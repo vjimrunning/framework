@@ -249,7 +249,7 @@ public class BaseHibernateDao implements IGenericBaseDao, ISqlExcutor {
     public <T> Serializable save(T entity) throws DaoException {
         try {
             Serializable id = getSession().save(entity);
-            logger.info("保存实体成功," + entity.getClass().getName());
+            logger.debug("保存实体成功," + entity.getClass().getName());
             return id;
         }
         catch (Exception e) {
@@ -268,7 +268,7 @@ public class BaseHibernateDao implements IGenericBaseDao, ISqlExcutor {
     public <T> void saveOrUpdate(T entity) throws DaoException {
         try {
             getSession().saveOrUpdate(entity);
-            logger.info("添加或更新成功," + entity.getClass().getName());
+            logger.debug("添加或更新成功," + entity.getClass().getName());
         }
         catch (RuntimeException e) {
             logger.error("添加或更新异常", e);
@@ -288,7 +288,7 @@ public class BaseHibernateDao implements IGenericBaseDao, ISqlExcutor {
     public <T> void delete(T entity) throws DaoException {
         try {
             getSession().delete(entity);
-            logger.info("删除成功," + entity.getClass().getName());
+            logger.debug("删除成功," + entity.getClass().getName());
         }
         catch (RuntimeException e) {
             logger.error("删除异常", e);
@@ -658,23 +658,30 @@ public class BaseHibernateDao implements IGenericBaseDao, ISqlExcutor {
 
             @Override
             public void execute(Connection connection) throws SQLException {
-                PreparedStatement stmt = connection.prepareStatement(sql);
-                connection.setAutoCommit(false);
-                int i = 0;
-                for (Object[] object : objcts) {
-                    i++;
-                    for (int j = 0; j < object.length; j++) {
-                        stmt.setObject(j + 1, object[j]);
+                PreparedStatement stmt = null;
+                try {
+                    stmt = connection.prepareStatement(sql);
+                    connection.setAutoCommit(false);
+                    int i = 0;
+                    for (Object[] object : objcts) {
+                        i++;
+                        for (int j = 0; j < object.length; j++) {
+                            stmt.setObject(j + 1, object[j]);
+                        }
+                        stmt.addBatch();
+                        if (i % commitNumber == 0) {
+                            stmt.executeBatch();
+                            connection.commit();
+                        }
                     }
-                    stmt.addBatch();
-                    if (i % commitNumber == 0) {
-                        stmt.executeBatch();
-                        connection.commit();
+                    stmt.executeBatch();
+                    connection.commit();
+                }
+                finally {
+                    if (stmt != null) {
+                        stmt.close();
                     }
                 }
-                stmt.executeBatch();
-                connection.commit();
-
             }
         });
     }
@@ -715,6 +722,23 @@ public class BaseHibernateDao implements IGenericBaseDao, ISqlExcutor {
 
     public <T> void saveBatch(List<T> entitys) {
         this.batchSave(entitys);
+    }
+
+    public <T> void updateBatch(List<T> entitys) {
+        if (entitys.size() > 1000) {
+            throw new UtilException(ErrorCodeDef.TOO_MANY_OBJECTS);
+        }
+        for (int i = 0; i < entitys.size(); i++) {
+            getSession().update(entitys.get(i));
+            if (i % 100 == 0) {
+                // 1000个对象后才清理缓存，写入数据库
+                getSession().flush();
+                getSession().clear();
+            }
+        }
+        // 最后清理一下----防止大于1000小于2000的不保存
+        getSession().flush();
+        getSession().clear();
     }
 
     public <T> void update(T pojo) {
