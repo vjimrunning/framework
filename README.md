@@ -8,7 +8,7 @@ Framework 3.0 框架说明
 
 # 框架介绍
 
-Framework框架集成了log、cache、db、message，每块都以模块形式组织，可以根据项目需要获取模块。
+Framework框架集成了log、cache、db、message，每块都以模块形式组织，可以根据项目需要获取模块。建立本框架的目的是解决各开源框架的兼容问题，屏蔽系统对某一具体中间件的依赖，满足项目快速迭代的要求。
 
 + framework-common 定义公用的常量、工具类 采用了spring-boot方式启动， 启动类为Application， 也可以支持web方式启动。
 + framework-log 分布式集成日志模块，详细的记录了每个方法执行的参数、返回结果、执行时间，可以很方便的排查问题或告警，通过远程接口上传服务器（支持直连服务端，也支持通过kafka发送）
