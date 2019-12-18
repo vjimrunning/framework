@@ -103,6 +103,10 @@ public class BaseHibernateDao implements IGenericBaseDao, ISqlExcutor {
             boolean isPager = false;
             PagerList resultList = null;
 
+            if (param.getPageIndex() == 0) {
+                param.setPageIndex(1);
+            }
+
             // step3:设置分页
             if (param.getPageIndex() != -1 && param.getPageSize() != -1
                 && List.class.isAssignableFrom(param.getReturnType())) {
@@ -547,6 +551,10 @@ public class BaseHibernateDao implements IGenericBaseDao, ISqlExcutor {
     @Override
     public <T> PagerList<T> getPageList(DetachedCriteria detachedCriteria, int pageIndex, int pageSize)
         throws DaoException {
+
+        if (pageIndex == 0) {
+            pageIndex = 1;
+        }
 
         Criteria criteria = detachedCriteria.getExecutableCriteria(getSession());
 
